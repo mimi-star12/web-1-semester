@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Досье студента</title>
+  <link rel="icon" href="png/sleepykitty.png">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="back-link" href="table+form.html">
+      ← К списку студентов
+    </a>
+  </header>
+
+  <main>
+    <section
+      id="student-not-found"
+      class="student-not-found"
+      hidden
+    >
+      <h1>Студент не найден</h1>
+      <p>
+        Проверьте ссылку или вернитесь к списку студентов.
+      </p>
+    </section>
+
+    <!-- Режим просмотра -->
+    <article id="student-view" class="student-card">
+      <h1>Досье студента</h1>
+
+      <div class="student-card-content">
+        <!-- Пока у студентов нет фото в данных, оставляем место под заглушку -->
+        <div class="student-photo-placeholder">
+          <img
+            class="student-photo"
+            src="png/sleepykitty.png"
+            alt="Котик вместо фотографии студента"
+          >
+        </div>
+
+        <dl class="student-details">
+          <div class="student-detail">
+            <dt>ФИО</dt>
+            <dd id="student-full-name"></dd>
+          </div>
+
+          <div class="student-detail">
+            <dt>Группа</dt>
+            <dd id="student-group"></dd>
+          </div>
+
+          <div class="student-detail">
+            <dt>ИСУ</dt>
+            <dd id="student-isu-id"></dd>
+          </div>
+
+          <div class="student-detail">
+            <dt>Общежитие</dt>
+            <dd id="student-dormitory-number"></dd>
+          </div>
+
+          <div class="student-detail">
+            <dt>Комната</dt>
+            <dd id="student-room-number"></dd>
+          </div>
+
+        <div class="student-detail student-detail-wide">
+          <dt>Период проживания</dt>
+
+          <dd class="student-date-range">
+            <span id="student-settlement-start"></span>
+            <span aria-hidden="true">–</span>
+            <span id="student-settlement-end"></span>
+          </dd>
+        </div>
+
+          <div class="student-detail">
+            <dt>Иностранный студент</dt>
+            <dd id="student-is-foreign"></dd>
+          </div>
+
+          <div class="student-detail student-detail-wide">
+            <dt>Заметки</dt>
+            <dd id="student-notes"></dd>
+          </div>    
+        </dl>
+      </div>
+
+      <a
+        id="edit-student-link"
+        class="primary-button"
+        href="student.html"
+      >
+        Редактировать
+      </a>
+    </article>
+
+    <!-- Режим редактирования -->
+    <form id="student-edit-form" class="student-form" hidden>
+      <h1>Редактирование студента</h1>
+
+      <div class="form-grid">
+        <label class="form-field form-field-wide">
+          <span>ФИО</span>
+          <input
+            name="fullName"
+            required
+            type="text"
+            pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*"
+            title="ФИО должно состоять из букв русского или английского алфавита, разделённых пробелами">
+        </label>
+
+        <label class="form-field">
+          <span>Группа</span>
+          <input
+            name="group"
+            type="text"
+            pattern="[A-Z][0-9]{4}"
+            title="Группа должна состоять из английской буквы и четырёх цифр"
+            required
+          >
+        </label>
+
+        <label class="form-field">
+          <span>ИСУ</span>
+          <input
+            name="isuId"
+            type="text"
+            inputmode="numeric"
+            required
+            pattern="[0-9]{6}"
+            maxlength="6"
+            minlength="6"
+            title="ИСУ должен состоять ровно из 6 цифр"
+          >
+        </label>
+
+        <label class="checkbox-field form-field-wide">
+          <input name="livesInDormitory" type="checkbox">
+          <span>Проживает в общежитии</span>
+        </label>
+
+        <fieldset
+          id="edit-dormitory-fields"
+          class="dormitory-fields form-field-wide"
+          hidden
+          disabled
+        >
+
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Номер общежития</span>
+              <input
+                name="dormitoryNumber"
+                type="number"
+                min="1"
+                step="1"
+              >
+            </label>
+
+            <label class="form-field">
+              <span>Номер комнаты</span>
+              <input
+                name="roomNumber"
+                type="number"
+                min="1"
+                step="1"
+              >
+            </label>
+
+            <fieldset class="date-range-field form-field-wide">
+              <legend>Заселение — выселение</legend>
+
+              <div class="date-range">
+                <input
+                  name="settlementStart"
+                  type="date"
+                  min="2020-01-01"
+                  max="2035-12-31"
+                  aria-label="Дата заселения"
+                >
+
+                <span aria-hidden="true">–</span>
+
+                <input
+                  name="settlementEnd"
+                  type="date"
+                  min="2020-01-01"
+                  max="2035-12-31"
+                  aria-label="Дата выселения"
+                  title="Дата выселения должна быть позже даты заселения"
+                >
+              </div>
+            </fieldset>
+          </div>
+        </fieldset>
+
+        <label class="checkbox-field form-field-wide">
+          <input name="isForeign" type="checkbox">
+          <span>Иностранный студент</span>
+        </label>
+
+        <label class="form-field form-field-wide">
+          <span>Заметки</span>
+          <textarea name="notes" rows="5" maxlength="500"></textarea>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button class="primary-button" type="submit">
+          Сохранить
+        </button>
+
+        <button
+          id="cancel-student-edit-button"
+          class="secondary-button"
+          type="button"
+        >
+          Отмена
+        </button>
+      </div>
+    </form>
+
+    <!-- сооб-ние для пользователя  -->
+    <p
+      id="student-page-message"
+      class="page-message"
+      role="status"
+      aria-live="polite"
+    ></p>
+  </main>
+
+  <script src="js/student-storage.js" defer></script>
+  <script src="js/student-page.js" defer></script>
+</body>
+</html>

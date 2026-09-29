@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Студенты ИТМО</title>
+    <link rel="icon" href="png/sleepykitty.png">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/pages.css">
+
+</head>
+<body>
+  <header class="page-header">
+
+    <div class="header-cat" aria-hidden="true">
+      🐈
+    </div>
+
+    <div class="header-content">
+      <p class="eyebrow">ИТМО • студенческое досье</p>
+
+      <h1>Управление студентами</h1>
+      <br>
+      <p>
+        <a href="start.html" class="header-subtitle">
+          назад
+        </a>
+      </p>
+    </div>
+
+    <div class="header-flower" aria-hidden="true">
+      🌸
+    </div>
+
+  </header>
+  <button id="show-student-form-button">добавить студента</button> 
+    <span>
+      💗 Нажми на имя студента, чтобы открыть его профиль
+    </span>
+  <form id="student-form" hidden>
+    <label>ФИО 
+      <input name="fullName" required 
+      type="text"
+      pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*">
+    </label><br>
+    <label>Группа 
+      <input name="group" required 
+      pattern="[A-Z][0-9]{4}"
+      placeholder="P3222"
+      title="Группа должна состоять из английской буквы и четырёх цифр">
+    </label><br>
+    <label>ИСУ <input name="isuId" required 
+      type="text"
+      step="1"
+      inputmode="numeric"
+      pattern="[0-9]{6}"
+      maxlength="6"
+      minlength="6"
+      title="ИСУ должен состоять ровно из 6 цифр"
+      >
+    </label><br>
+    <label class="checkbox-field">
+      Живёт в общежитии 
+      <input
+      name="livesInDormitory"
+      type="checkbox">
+    </label>
+    <fieldset id="dormitory-fields" hidden disabled>
+
+      <label class="form-field">
+        Номер общежития
+        <input
+          name="dormitoryNumber"
+          type="number"
+          min="1"
+          step="1"
+        >
+      </label>
+
+      <label class="form-field">
+        Комната
+        <input
+          name="roomNumber"
+          type="number"
+          min="1"
+          step="1"
+        >
+      </label>
+
+      <fieldset class="date-range-field">
+      <legend>Заселение — выселение</legend>
+
+        <div class="date-range">
+          <input
+            name="settlementStart"
+            type="date"
+            min="2020-01-01"
+            max="2027-12-31"
+            aria-label="Дата заселения"
+          >
+
+          <span>—</span>
+
+          <input
+            name="settlementEnd"
+            type="date"
+            max="2035-12-31"
+            aria-label="Дата выселения"
+          >
+        </div>
+      </fieldset>
+    </fieldset>
+    <br>
+    <label>Иностранец <input name="isForeign" type="checkbox"></label><br>
+    <label>Заметки <textarea name="notes"></textarea></label>
+    <div class="form-actions">
+        <button type="submit">Сохранить</button>
+        <button id="cancel-student-form-button" type="button">Отмена</button>
+    </div>
+  </form>
+  <table>
+  <caption>Список студентов</caption>
+  <thead>
+  <tr>
+    <th>ФИО</th>
+    <th>Группа</th>
+    <th>ИСУ</th>
+    <th>Общежитие</th>
+    <th>Действия</th>
+  </tr>
+  </thead>
+  <tbody id="students-table-body">
+  </tbody>
+  </table> 
+  <div class="table-footer">
+    <span aria-hidden="true">💗</span>
+  </div>
+  <script src="js/student-storage.js" defer></script>
+  <script src="js/students-table.js" defer></script>
+</body>
+</html>
+
