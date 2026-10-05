@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .serializers import StudentSerializer
+from .serializers import StudentSerializer, StudentFilterSerializer
 from . import services
 
 
@@ -32,24 +32,13 @@ def serializer_error(serializer):
 @api_view(["GET", "POST", "QUERY"])
 def requests_list(request):
 
-    # GET /api/requests
-    # GET /api/requests?group=P32
-    if request.method == "GET":
-        filters = request.query_params.dict()
-
-        if filters:
-            students = services.filter_students(filters)
-        else:
-            students = services.get_all_students()
-
-        return Response(students, status=200)
-
-    # QUERY /api/requests
-    if request.method == "QUERY":
-        filters = request.data
-
-        students = services.filter_students(filters)
-
+    # GET передаёт фильтры в URL, QUERY — в JSON-теле.
+    if request.method in ("GET", "QUERY"):
+        filters = request.query_params.dict() if request.method == "GET" else request.data
+        serializer = StudentFilterSerializer(data=filters)
+        if not serializer.is_valid():
+            return serializer_error(serializer)
+        students = services.filter_students(serializer.validated_data)
         return Response(students, status=200)
 
     # POST /api/requests
@@ -75,7 +64,7 @@ def requests_list(request):
 @api_view(["GET", "PATCH", "DELETE"])
 def request_by_id(request, isu_id):
 
-    student = services.get_student(isu_id)
+    student = services.get_by_isu(isu_id)
 
     if student is None:
         return error(
@@ -95,6 +84,8 @@ def request_by_id(request, isu_id):
 
     # PATCH /api/requests/:isuId
     if request.method == "PATCH":
+        if not isinstance(request.data, dict):
+            return error("Изменения должны быть объектом JSON", 422)
         updated_student = student.copy()
 
         updated_student.update(request.data)
