@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Студенты ИТМО</title>
-    <link rel="icon" href="png/sleepykitty.png">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/pages.css">
-
+  <title>Студенты ИТМО</title>
+  <link rel="icon" href="png/sleepykitty.png">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
 <body>
   <header class="page-header">
-
     <div class="header-cat" aria-hidden="true">
       🐈
     </div>
 
     <div class="header-content">
       <p class="eyebrow">ИТМО • студенческое досье</p>
-
       <h1>Управление студентами</h1>
       <br>
       <p>
@@ -31,42 +28,53 @@
     <div class="header-flower" aria-hidden="true">
       🌸
     </div>
-
   </header>
-  <button id="show-student-form-button">добавить студента</button> 
-    <span>
-      💗 Нажми на имя студента, чтобы открыть его профиль
-    </span>
+
+  <button id="show-student-form-button">добавить студента</button>
+  <span>
+    💗 Нажми на имя студента, чтобы открыть его профиль
+  </span>
+
   <form id="student-form" hidden>
-    <label>ФИО 
-      <input name="fullName" required 
-      type="text"
-      pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*">
-    </label><br>
-    <label>Группа 
-      <input name="group" required 
-      pattern="[A-Z][0-9]{4}"
-      placeholder="P3222"
-      title="Группа должна состоять из английской буквы и четырёх цифр">
-    </label><br>
-    <label>ИСУ <input name="isuId" required 
-      type="text"
-      step="1"
-      inputmode="numeric"
-      pattern="[0-9]{6}"
-      maxlength="6"
-      minlength="6"
-      title="ИСУ должен состоять ровно из 6 цифр"
+    <label>ФИО
+      <input
+        name="fullName"
+        required
+        type="text"
+        pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*"
       >
     </label><br>
-    <label class="checkbox-field">
-      Живёт в общежитии 
-      <input
-      name="livesInDormitory"
-      type="checkbox">
-    </label>
-    <fieldset id="dormitory-fields" hidden disabled>
 
+    <label>Группа
+      <input
+        name="group"
+        required
+        pattern="[A-Z][0-9]{4}"
+        placeholder="P3222"
+        title="Группа должна состоять из английской буквы и четырёх цифр"
+      >
+    </label><br>
+
+    <label>ИСУ
+      <input
+        name="isuId"
+        required
+        type="text"
+        step="1"
+        inputmode="numeric"
+        pattern="[0-9]{6}"
+        maxlength="6"
+        minlength="6"
+        title="ИСУ должен состоять ровно из 6 цифр"
+      >
+    </label><br>
+
+    <label class="checkbox-field">
+      Живёт в общежитии
+      <input name="livesInDormitory" type="checkbox">
+    </label>
+
+    <fieldset id="dormitory-fields" hidden disabled>
       <label class="form-field">
         Номер общежития
         <input
@@ -88,7 +96,7 @@
       </label>
 
       <fieldset class="date-range-field">
-      <legend>Заселение — выселение</legend>
+        <legend>Заселение — выселение</legend>
 
         <div class="date-range">
           <input
@@ -110,33 +118,150 @@
         </div>
       </fieldset>
     </fieldset>
+
     <br>
     <label>Иностранец <input name="isForeign" type="checkbox"></label><br>
-    <label>Заметки <textarea name="notes"></textarea></label>
+    <label>Заметки <textarea name="notes" maxlength="500"></textarea></label>
+
     <div class="form-actions">
-        <button type="submit">Сохранить</button>
-        <button id="cancel-student-form-button" type="button">Отмена</button>
+      <button type="submit">Сохранить</button>
+      <button id="cancel-student-form-button" type="button">Отмена</button>
     </div>
   </form>
-  <table>
-  <caption>Список студентов</caption>
-  <thead>
-  <tr>
-    <th>ФИО</th>
-    <th>Группа</th>
-    <th>ИСУ</th>
-    <th>Общежитие</th>
-    <th>Действия</th>
-  </tr>
-  </thead>
-  <tbody id="students-table-body">
-  </tbody>
-  </table> 
+
+  <p
+    id="students-table-message"
+    class="page-message"
+    role="status"
+    aria-live="polite"
+  ></p>
+
+  <section class="students-list" aria-labelledby="students-title">
+    <div class="list-toolbar">
+      <h2 id="students-title">Список студентов</h2>
+
+      <button
+        type="button"
+        id="toggle-filters"
+        class="filter-toggle"
+        aria-controls="filters-panel"
+        aria-expanded="false"
+      >
+        <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 6h16M7 12h10M10 18h4" />
+        </svg>
+        Фильтр
+      </button>
+    </div>
+
+    <form id="filters-panel" class="filters-panel" hidden>
+      <div class="filter-grid">
+        <label>ФИО
+          <input
+            type="text"
+            id="name-filter"
+            name="fullName"
+            class="filter-input"
+            pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*"
+            title="Введите буквы; слова разделяйте одним пробелом"
+            placeholder="Имя или фамилия"
+          >
+        </label>
+
+        <label>Группа
+          <input
+            type="text"
+            id="group-filter"
+            name="group"
+            class="filter-input"
+            pattern="[A-Z][0-9]{0,4}"
+            title="Заглавная английская буква и до четырёх цифр"
+            placeholder="Например, P32"
+          >
+        </label>
+
+        <label>ИСУ
+          <input
+            type="text"
+            id="isu-filter"
+            name="isuId"
+            class="filter-input"
+            inputmode="numeric"
+            pattern="[0-9]{1,6}"
+            maxlength="6"
+            title="Введите от одной до шести цифр"
+            placeholder="Начало номера"
+          >
+        </label>
+
+        <label>Номер общежития
+          <input
+            type="text"
+            id="dormitory-filter"
+            name="dormitoryNumber"
+            class="filter-input"
+            inputmode="numeric"
+            pattern="[1-9][0-9]*"
+            title="Введите положительное целое число"
+            placeholder="Например, 3"
+          >
+        </label>
+      </div>
+
+      <div class="filter-footer">
+        <label>Проживание
+          <select
+            id="lives-in-dormitory-filter"
+            name="livesInDormitory"
+            class="filter-input"
+          >
+            <option value="">Все</option>
+            <option value="true">Живёт</option>
+            <option value="false">Не живёт</option>
+          </select>
+        </label>
+
+        <label>Иностранный студент
+          <select
+            id="foreign-filter"
+            name="isForeign"
+            class="filter-input"
+          >
+            <option value="">Все</option>
+            <option value="true">Да</option>
+            <option value="false">Нет</option>
+          </select>
+        </label>
+
+        <div class="filter-actions">
+          <button type="button" id="reset-filters">Сбросить</button>
+          <button type="submit" id="apply-filters">Применить</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="table-scroll">
+      <table id="students-table">
+        <caption class="visually-hidden">Список студентов</caption>
+        <thead>
+          <tr>
+            <th scope="col">ФИО</th>
+            <th scope="col">Группа</th>
+            <th scope="col">ИСУ</th>
+            <th scope="col">Общежитие</th>
+            <th scope="col">Действия</th>
+          </tr>
+        </thead>
+        <tbody id="students-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
   <div class="table-footer">
     <span aria-hidden="true">💗</span>
   </div>
-  <script src="js/student-storage.js" defer></script>
+
+  <script src="js/student-api.js" defer></script>
   <script src="js/students-table.js" defer></script>
 </body>
 </html>
-

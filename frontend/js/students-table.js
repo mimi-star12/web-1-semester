@@ -1,64 +1,93 @@
-console.log("students-table.js подключился");
+const tableBody = document.querySelector("#students-table-body");
+const studentForm = document.querySelector("#student-form");
+const showStudentFormButton = document.querySelector("#show-student-form-button");
+const cancelStudentFormButton = document.querySelector("#cancel-student-form-button");
+const tableMessage = document.querySelector("#students-table-message");
 
-const savedStudents = loadStudents();
+const settlementStartInput = studentForm.elements.settlementStart;
+const settlementEndInput = studentForm.elements.settlementEnd;
 
-const students = savedStudents ?? [
-  {
-    fullName: "Милли Иванова",
-    group: "P3222",
-    isuId: "504695",
-    livesInDormitory: true,
-    dormitoryNumber: "3",
-    roomNumber: "16",
-    settlementStart: "2026-09-01",
-    settlementEnd: "2027-06-30",
-    isForeign: false,
-    notes: "блин милли все сломала, молодец"
+const toggleFiltersButton = document.querySelector("#toggle-filters");
+const filtersPanel = document.querySelector("#filters-panel");
+const filterInputs = document.querySelectorAll(".filter-input");
+const dormitoryStatusFilter = document.querySelector("#lives-in-dormitory-filter");
+const dormitoryNumberFilter = document.querySelector("#dormitory-filter");
+const applyFiltersButton = document.querySelector("#apply-filters");
+const resetFiltersButton = document.querySelector("#reset-filters");
+
+let activeFilters = {};
+
+toggleFiltersButton.addEventListener("click", () => {
+  filtersPanel.hidden = !filtersPanel.hidden;
+  toggleFiltersButton.setAttribute(
+    "aria-expanded",
+    String(!filtersPanel.hidden)
+  );
+});
+
+function updateDormitoryNumberFilter() {
+  const doesNotLiveInDormitory =
+    dormitoryStatusFilter.value === "false";
+
+  if (doesNotLiveInDormitory) {
+    dormitoryNumberFilter.value = "";
   }
-];
 
-if (savedStudents === null) {
-  saveStudents(students);
+  dormitoryNumberFilter.disabled = doesNotLiveInDormitory;
 }
 
-
-const tableBody = document.querySelector(
-  "#students-table-body"
+dormitoryStatusFilter.addEventListener(
+  "change",
+  updateDormitoryNumberFilter
 );
 
-const studentForm = document.querySelector(
-  "#student-form"
-);
+function getFiltersFromInputs() {
+  const filters = {};
 
-const showStudentFormButton = document.querySelector(
-  "#show-student-form-button"
-);
+  filterInputs.forEach((input) => {
+    if (input.disabled) return;
 
-const cancelStudentFormButton = document.querySelector(
-  "#cancel-student-form-button"
-);
+    const value = input.value.trim();
 
+    if (value !== "") {
+      filters[input.name] =
+        input.name === "livesInDormitory" ||
+        input.name === "isForeign"
+          ? value === "true"
+          : value;
+    }
+  });
 
-const settlementStartInput =
-  studentForm.elements.settlementStart;
+  return filters;
+}
 
-const settlementEndInput =
-  studentForm.elements.settlementEnd;
+filtersPanel.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-function renderStudents() {
+  activeFilters = getFiltersFromInputs();
+  await refreshStudents();
+});
+
+resetFiltersButton.addEventListener("click", async () => {
+  filterInputs.forEach((input) => {
+    input.value = "";
+  });
+
+  updateDormitoryNumberFilter();
+  activeFilters = {};
+  await refreshStudents();
+});
+
+function renderStudents(studentsToShow) {
   tableBody.replaceChildren();
 
-  students.forEach((student) => {
+  studentsToShow.forEach((student) => {
     const row = document.createElement("tr");
 
     const nameCell = document.createElement("td");
     const nameLink = document.createElement("a");
-
-    // constructing "matryoshka-like" structure
     nameLink.textContent = student.fullName;
-    nameLink.href =
-      `student.html?isu=${student.isuId}`;
-
+    nameLink.href = `student.html?isu=${student.isuId}`;
     nameCell.append(nameLink);
 
     const groupCell = document.createElement("td");
@@ -68,20 +97,16 @@ function renderStudents() {
     isuCell.textContent = student.isuId;
 
     const dormitoryCell = document.createElement("td");
-    dormitoryCell.textContent =
-      student.livesInDormitory
-        ? `Корпус ${student.dormitoryNumber}`
-        : "—";
+    dormitoryCell.textContent = student.livesInDormitory
+      ? `Корпус ${student.dormitoryNumber}`
+      : "—";
 
-    //action row
     const actionCell = document.createElement("td");
     actionCell.classList.add("actions-cell");
 
-    // Кнопка удаления
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
-    deleteButton.ariaLabel =
-      `Удалить ${student.fullName}`;
+    deleteButton.ariaLabel = `Удалить ${student.fullName}`;
     deleteButton.classList.add("action-control");
 
     const deleteIcon = document.createElement("img");
@@ -89,31 +114,26 @@ function renderStudents() {
     deleteIcon.alt = "";
     deleteIcon.classList.add("action-icon");
     deleteIcon.style.width = "16px";
-
     deleteButton.append(deleteIcon);
 
-    deleteButton.addEventListener("click", () => {
-      const shouldDelete = confirm(`Удалить студента ${student.fullName}?`);
-
-      if (!shouldDelete) {
-        return;
-      }
-
-      const studentIndex = students.findIndex(
-        (currentStudent) => currentStudent.isuId === student.isuId
+    deleteButton.addEventListener("click", async () => {
+      const shouldDelete = confirm(
+        `Удалить студента ${student.fullName}?`
       );
+      if (!shouldDelete) return;
 
-      if (studentIndex === -1) {
-        return;
+      tableMessage.textContent = "";
+
+      try {
+        await deleteStudent(student.isuId);
+        await refreshStudents();
+      } catch (error) {
+        tableMessage.textContent = error.status
+          ? error.message
+          : "Не удалось удалить студента.";
       }
-
-      // splice(индекс начала удаления, кол-во удаляемых элементов)
-      students.splice(studentIndex, 1);
-      saveStudents(students);
-      renderStudents();
     });
 
-    // Ссылка редактирования
     const editLink = document.createElement("a");
     editLink.href =
       `student.html?isu=${student.isuId}&mode=edit`;
@@ -142,8 +162,33 @@ function renderStudents() {
   });
 }
 
+async function refreshStudents() {
+  tableMessage.textContent = "";
+
+  try {
+    const studentsFromServer =
+      await getStudents(activeFilters);
+
+    renderStudents(studentsFromServer);
+
+    if (studentsFromServer.length === 0) {
+      tableMessage.textContent =
+        Object.keys(activeFilters).length === 0
+          ? "Пока нет студентов."
+          : "Студенты не найдены.";
+    }
+  } catch (error) {
+    tableMessage.textContent = error.status
+      ? error.message
+      : "Не удалось загрузить список студентов.";
+  }
+}
+
 showStudentFormButton.addEventListener("click", () => {
   studentForm.reset();
+  updateDormitoryFields();
+  updateSettlementEndMin();
+
   studentForm.hidden = false;
   studentForm.scrollIntoView({
     behavior: "smooth",
@@ -170,11 +215,8 @@ function updateDormitoryFields() {
   const livesInDormitory =
     dormitoryCheckbox.checked;
 
-  dormitoryFields.hidden =
-    !livesInDormitory;
-
-  dormitoryFields.disabled =
-    !livesInDormitory;
+  dormitoryFields.hidden = !livesInDormitory;
+  dormitoryFields.disabled = !livesInDormitory;
 
   dormitoryInputs.forEach((input) => {
     input.required = livesInDormitory;
@@ -188,65 +230,69 @@ dormitoryCheckbox.addEventListener(
 
 updateDormitoryFields();
 
-// сохранение студента
-studentForm.addEventListener("submit", function (event) {
-  event.preventDefault();
-  
-  // получаем данные из формы (используем .get, .has)
-  const formData = new FormData(studentForm);
-  const isuId = formData.get("isuId").trim();
-  const livesInDormitory = formData.has("livesInDormitory");
+studentForm.addEventListener(
+  "submit",
+  async function (event) {
+    event.preventDefault();
+    tableMessage.textContent = "";
 
-  const isuAlreadyExists = students.some((student) => student.isuId === isuId);
-  const isuInput = studentForm.elements.isuId;
+    const formData = new FormData(studentForm);
+    const livesInDormitory =
+      formData.has("livesInDormitory");
 
-  isuInput.addEventListener("input", () => {
-    isuInput.setCustomValidity("");
-  });
-  if (isuAlreadyExists) {
-    isuInput.setCustomValidity("Студент с таким ИСУ уже существует.");
-    isuInput.reportValidity();
-    return;
+    const newStudent = {
+      fullName: formData.get("fullName").trim(),
+      group: formData.get("group").trim(),
+      isuId: formData.get("isuId").trim(),
+      livesInDormitory,
+
+      dormitoryNumber: livesInDormitory
+        ? formData.get("dormitoryNumber").trim()
+        : "",
+
+      roomNumber: livesInDormitory
+        ? formData.get("roomNumber").trim()
+        : "",
+
+      settlementStart: livesInDormitory
+        ? formData.get("settlementStart")
+        : "",
+
+      settlementEnd: livesInDormitory
+        ? formData.get("settlementEnd")
+        : "",
+
+      isForeign: formData.has("isForeign"),
+      notes: formData.get("notes").trim()
+    };
+
+    try {
+      await createStudent(newStudent);
+
+      studentForm.reset();
+      studentForm.hidden = true;
+
+      updateDormitoryFields();
+      updateSettlementEndMin();
+
+      await refreshStudents();
+    } catch (error) {
+      tableMessage.textContent = error.status
+        ? error.message
+        : "Не удалось добавить студента.";
+    }
   }
+);
 
-  const newStudent = {
-    fullName: formData.get("fullName").trim(),
-    group: formData.get("group").trim(),
-    isuId,
-    livesInDormitory,
-    dormitoryNumber: livesInDormitory ? formData.get("dormitoryNumber").trim() : "",
-    roomNumber: livesInDormitory ? formData.get("roomNumber").trim() : "",
-    settlementStart: livesInDormitory ? formData.get("settlementStart") : "",
-    settlementEnd: livesInDormitory ? formData.get("settlementEnd") : "",
-    isForeign: formData.has("isForeign"),
-    notes: formData.get("notes").trim()
-  };
-  students.push(newStudent);
-  saveStudents(students);
-  renderStudents();
-
-  studentForm.reset();
-  studentForm.hidden = true;
-
-  updateDormitoryFields();
-  updateSettlementEndMin();
-});
-
-// выселение позже заселения
 function updateSettlementEndMin() {
   settlementEndInput.min =
-    settlementStartInput.value || "2020-01-01"; // | - или
+    settlementStartInput.value || "2020-01-01";
 }
+
 settlementStartInput.addEventListener(
   "change",
   updateSettlementEndMin
 );
+
 updateSettlementEndMin();
-
-
-renderStudents();
-
-console.log(students[0].fullName);
-
-
-
+refreshStudents();

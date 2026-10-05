@@ -4,10 +4,6 @@ const isuFromUrl = params.get("isu");
 const isEditMode = params.get("mode") === "edit";
 
 
-const students = loadStudents() ?? [];
-const studentIndex = students.findIndex(
-  (student) => student.isuId === isuFromUrl
-);
 
 // ищем элементы из html
 const studentNotFound = document.querySelector("#student-not-found");
@@ -34,7 +30,7 @@ function formatDate(date) {
   return `${day}.${month}.${year}`;
 }
 
-// режим просмотра
+// заполняем режим просмотра
 function fillStudentView(student) {
   document.querySelector("#student-full-name").textContent = student.fullName;
   document.querySelector("#student-group").textContent = student.group;
@@ -58,7 +54,7 @@ function fillStudentView(student) {
   document.querySelector("#student-notes").textContent = student.notes || "—";
 }
 
-// режим редактирования
+// заполняем режим редактирования
 function fillStudentForm(student) {
   studentEditForm.elements.fullName.value = student.fullName;
   studentEditForm.elements.group.value = student.group;
@@ -118,35 +114,14 @@ cancelStudentEditButton.addEventListener("click", () => {
 });
 
 
-studentEditForm.addEventListener("submit", (event) => {
+studentEditForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   pageMessage.textContent = "";
 
   const newIsuId = studentEditForm.elements.isuId.value.trim();
-
-  const isuAlreadyExists = students.some(
-    (student, index) => index !== studentIndex && student.isuId === newIsuId
-  );
-
-  if (isuAlreadyExists) {
-    pageMessage.textContent = "Студент с таким ИСУ уже существует.";
-    return;
-  }
-
   const livesInDormitory = dormitoryCheckbox.checked;
 
-  if (
-    livesInDormitory &&
-    settlementStartInput.value &&
-    settlementEndInput.value &&
-    settlementEndInput.value < settlementStartInput.value
-  ) {
-    pageMessage.textContent = "Дата выселения не может быть раньше даты заселения.";
-    return;
-  }
-
   const updatedStudent = {
-    ...students[studentIndex],
     fullName: studentEditForm.elements.fullName.value.trim(),
     group: studentEditForm.elements.group.value.trim(),
     isuId: newIsuId,
@@ -166,23 +141,52 @@ studentEditForm.addEventListener("submit", (event) => {
     notes: studentEditForm.elements.notes.value.trim()
   };
 
-  students[studentIndex] = updatedStudent;
-  saveStudents(students);
+  try {
+    const savedStudent = await updateStudent(isuFromUrl, updatedStudent);
 
-  window.location.href = `student.html?isu=${encodeURIComponent(newIsuId)}`;
+    window.location.href =
+      `student.html?isu=${encodeURIComponent(savedStudent.isuId)}`;
+  } catch (error) {
+    pageMessage.textContent =
+      error.status
+        ? error.message
+        : "Не удалось сохранить изменения.";
+  }
 });
 
+async function loadStudentPage() {
+  studentView.hidden = true;
+  studentEditForm.hidden = true;
+  studentNotFound.hidden = true;
+  pageMessage.textContent = "";
 
-if (studentIndex === -1) {
-  showStudentNotFound();
-} else {
-  const student = students[studentIndex];
+  if (!isuFromUrl) {
+    showStudentNotFound();
+    return;
+  }
 
-  fillStudentView(student);
-  fillStudentForm(student);
+  pageMessage.textContent = "Загрузка студента…";
 
-  editStudentLink.href =
-    `student.html?isu=${encodeURIComponent(student.isuId)}&mode=edit`;
+  try {
+    const student = await getStudent(isuFromUrl);
 
-  showSelectedMode(student);
+    fillStudentView(student);
+
+    editStudentLink.href =
+      `student.html?isu=${encodeURIComponent(student.isuId)}&mode=edit`;
+
+    showSelectedMode(student);
+    pageMessage.textContent = "";
+  } catch (error) {
+    if (error.status === 404) {
+      showStudentNotFound();
+    }
+
+    pageMessage.textContent =
+      error.status
+        ? error.message
+        : "Не удалось загрузить данные студента.";
+  }
 }
+
+loadStudentPage();
