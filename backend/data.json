@@ -1,0 +1,62 @@
+[
+  {
+    "fullName": "тететт",
+    "group": "P2222",
+    "isuId": "333333",
+    "livesInDormitory": true,
+    "isForeign": false,
+    "dormitoryNumber": "1",
+    "roomNumber": "222",
+    "settlementStart": "2020-09-09",
+    "settlementEnd": "2024-09-09",
+    "notes": "asedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedrfbddsgdb basedr"
+  },
+  {
+    "fullName": "Милли Иванова",
+    "group": "P2222",
+    "isuId": "342355",
+    "livesInDormitory": false,
+    "isForeign": false,
+    "dormitoryNumber": "",
+    "roomNumber": "",
+    "settlementStart": "",
+    "settlementEnd": "",
+    "notes": ""
+  },
+  {
+    "fullName": "sdvvvddv",
+    "group": "C3444",
+    "isuId": "504695",
+    "livesInDormitory": false,
+    "isForeign": false,
+    "dormitoryNumber": "",
+    "roomNumber": "",
+    "settlementStart": "",
+    "settlementEnd": "",
+    "notes": ""
+  },
+  {
+    "fullName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "group": "C3444",
+    "isuId": "111111",
+    "livesInDormitory": false,
+    "isForeign": false,
+    "dormitoryNumber": "",
+    "roomNumber": "",
+    "settlementStart": "",
+    "settlementEnd": "",
+    "notes": ""
+  },
+  {
+    "fullName": "saddsad",
+    "group": "P2211",
+    "isuId": "222222",
+    "livesInDormitory": false,
+    "isForeign": true,
+    "dormitoryNumber": "",
+    "roomNumber": "",
+    "settlementStart": "",
+    "settlementEnd": "",
+    "notes": "wqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq.action-icon {\n  width: 29px;\n  height: 29px;\n  flex-shrink: 0;\n  object-fit: contain;\n}\n\n/* Мусорка находится в button, карандаш — в ссылке */\n.actions-cell button .action-icon {\n  width: 23px;\n  height: 23px;\n}.action-icon {\n  width: 29px;\n  height: 29px;\n  flex-shrink: 0;\n  object-fit: contain;\n}\n\n/* Мусорка находится в button, карандаш — в ссылке */\n.actions-cell button .action-icon {\n  width: 23px;\n  height: 23px;.action-icon {\n  width: 29px;.acheight: v}"
+  }
+]

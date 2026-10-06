@@ -18,6 +18,7 @@ const resetFiltersButton = document.querySelector("#reset-filters");
 let activeFilters = {};
 
 toggleFiltersButton.addEventListener("click", () => {
+  studentForm.hidden = true;
   filtersPanel.hidden = !filtersPanel.hidden;
   toggleFiltersButton.setAttribute(
     "aria-expanded",
@@ -113,7 +114,6 @@ function renderStudents(studentsToShow) {
     deleteIcon.src = "png/delete-icon.png";
     deleteIcon.alt = "";
     deleteIcon.classList.add("action-icon");
-    deleteIcon.style.width = "16px";
     deleteButton.append(deleteIcon);
 
     deleteButton.addEventListener("click", async () => {
@@ -145,7 +145,6 @@ function renderStudents(studentsToShow) {
     editIcon.src = "png/edit-icon.png";
     editIcon.alt = "";
     editIcon.classList.add("action-icon");
-    editIcon.style.width = "16px";
     editLink.append(editIcon);
 
     actionCell.append(editLink, deleteButton);
@@ -188,7 +187,7 @@ showStudentFormButton.addEventListener("click", () => {
   studentForm.reset();
   updateDormitoryFields();
   updateSettlementEndMin();
-
+  filtersPanel.hidden = true;
   studentForm.hidden = false;
   studentForm.scrollIntoView({
     behavior: "smooth",
@@ -200,6 +199,7 @@ showStudentFormButton.addEventListener("click", () => {
 cancelStudentFormButton.addEventListener("click", () => {
   studentForm.reset();
   studentForm.hidden = true;
+  filtersPanel.hidden = true;
 });
 
 const dormitoryCheckbox =

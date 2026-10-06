@@ -15,9 +15,6 @@
     </div>
 
     <div class="header-content">
-      <p class="eyebrow">ИТМО • студенческое досье</p>
-      <h1>Управление студентами</h1>
-      <br>
       <p>
         <a href="start.html" class="header-subtitle">
           назад
@@ -29,106 +26,7 @@
       🌸
     </div>
   </header>
-
-  <button id="show-student-form-button">добавить студента</button>
-  <span>
-    💗 Нажми на имя студента, чтобы открыть его профиль
-  </span>
-
-  <form id="student-form" hidden>
-    <label>ФИО
-      <input
-        name="fullName"
-        required
-        type="text"
-        pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*"
-      >
-    </label><br>
-
-    <label>Группа
-      <input
-        name="group"
-        required
-        pattern="[A-Z][0-9]{4}"
-        placeholder="P3222"
-        title="Группа должна состоять из английской буквы и четырёх цифр"
-      >
-    </label><br>
-
-    <label>ИСУ
-      <input
-        name="isuId"
-        required
-        type="text"
-        step="1"
-        inputmode="numeric"
-        pattern="[0-9]{6}"
-        maxlength="6"
-        minlength="6"
-        title="ИСУ должен состоять ровно из 6 цифр"
-      >
-    </label><br>
-
-    <label class="checkbox-field">
-      Живёт в общежитии
-      <input name="livesInDormitory" type="checkbox">
-    </label>
-
-    <fieldset id="dormitory-fields" hidden disabled>
-      <label class="form-field">
-        Номер общежития
-        <input
-          name="dormitoryNumber"
-          type="number"
-          min="1"
-          step="1"
-        >
-      </label>
-
-      <label class="form-field">
-        Комната
-        <input
-          name="roomNumber"
-          type="number"
-          min="1"
-          step="1"
-        >
-      </label>
-
-      <fieldset class="date-range-field">
-        <legend>Заселение — выселение</legend>
-
-        <div class="date-range">
-          <input
-            name="settlementStart"
-            type="date"
-            min="2020-01-01"
-            max="2027-12-31"
-            aria-label="Дата заселения"
-          >
-
-          <span>—</span>
-
-          <input
-            name="settlementEnd"
-            type="date"
-            max="2035-12-31"
-            aria-label="Дата выселения"
-          >
-        </div>
-      </fieldset>
-    </fieldset>
-
-    <br>
-    <label>Иностранец <input name="isForeign" type="checkbox"></label><br>
-    <label>Заметки <textarea name="notes" maxlength="500"></textarea></label>
-
-    <div class="form-actions">
-      <button type="submit">Сохранить</button>
-      <button id="cancel-student-form-button" type="button">Отмена</button>
-    </div>
-  </form>
-
+  <hr class="page-divider">
   <p
     id="students-table-message"
     class="page-message"
@@ -138,6 +36,10 @@
 
   <section class="students-list" aria-labelledby="students-title">
     <div class="list-toolbar">
+      <button type="button" id="show-student-form-button">
+        добавить студента
+      </button>
+
       <h2 id="students-title">Список студентов</h2>
 
       <button
@@ -147,13 +49,116 @@
         aria-controls="filters-panel"
         aria-expanded="false"
       >
-        <svg class="filter-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg
+          class="filter-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
           <path d="M4 6h16M7 12h10M10 18h4" />
         </svg>
         Фильтр
       </button>
-    </div>
 
+      <p class="students-hint">
+        Нажми на имя студента, чтобы открыть его профиль
+      </p>
+    </div>
+      <form id="student-form" hidden>
+        <label class="add-form-wide">ФИО
+          <input
+            name="fullName"
+            required
+            type="text"
+            pattern="[A-Za-zА-Яа-яЁё]+( [A-Za-zА-Яа-яЁё]+)*"
+            maxlength="60"
+          >
+        </label>
+
+        <label>Группа
+          <input
+            name="group"
+            required
+            pattern="[A-Z][0-9]{4}"
+            placeholder="P3222"
+            title="Группа должна состоять из английской буквы и четырёх цифр"
+          >
+        </label>
+        <label>ИСУ
+          <input
+            name="isuId"
+            required
+            type="text"
+            step="1"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            minlength="6"
+            title="ИСУ должен состоять ровно из 6 цифр"
+          >
+        </label>
+
+        <label class="checkbox-field">
+          Живёт в общежитии
+          <input name="livesInDormitory" type="checkbox">
+        </label>
+
+        <label class="checkbox-field">Иностранец <input name="isForeign" type="checkbox"></label>
+
+        <fieldset id="dormitory-fields" hidden disabled>
+          <label class="form-field">
+            Номер общежития
+            <input
+              name="dormitoryNumber"
+              type="number"
+              min="1"
+              step="1"
+            >
+          </label>
+
+          <label class="form-field">
+            Комната
+            <input
+              name="roomNumber"
+              type="number"
+              min="1"
+              step="1"
+            >
+          </label>
+
+          <fieldset class="date-range-field">
+            <legend>Заселение — выселение</legend>
+
+            <div class="date-range">
+              <input
+                name="settlementStart"
+                type="date"
+                min="2020-01-01"
+                max="2027-12-31"
+                aria-label="Дата заселения"
+              >
+
+              <span>—</span>
+
+              <input
+                name="settlementEnd"
+                type="date"
+                max="2035-12-31"
+                aria-label="Дата выселения"
+              >
+            </div>
+          </fieldset>
+        </fieldset>
+
+        
+        
+        <label class="add-form-wide">Заметки <textarea name="notes" maxlength="500"></textarea></label>
+
+        <div class="form-actions">
+          <button type="submit">Сохранить</button>
+          <button id="cancel-student-form-button" type="button">Отмена</button>
+        </div>
+      </form>
     <form id="filters-panel" class="filters-panel" hidden>
       <div class="filter-grid">
         <label>ФИО
